@@ -1,0 +1,131 @@
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+import java.io.File;
+import java.util.Scanner;
+
+// 
+// Decompiled by Procyon v0.5.36
+// 
+
+public class Main
+{
+    public static void main(final String[] args) throws FileNotFoundException, InterruptedException {
+        final Scanner in = new Scanner(System.in);
+        System.out.println("Enter username: ");
+        final String username = in.nextLine();
+        System.out.println("Enter last 4 digits of game ID: ");
+        final String id = in.nextLine().toUpperCase();
+        String path = "C:\\AmericasCardroom\\handHistory";
+        path = invokedynamic(makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;, path, username);
+        final File directory = new File(path);
+        final String[] list;
+        final String[] fileList = list = directory.list();
+        for (final String f : list) {
+            if (f.contains(id)) {
+                path = invokedynamic(makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;, path, f);
+            }
+        }
+        final File file = new File(path);
+        System.out.println(invokedynamic(makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;, file.toString()));
+        TimeUnit.SECONDS.sleep(2L);
+        clrscr();
+        while (true) {
+            final HashMap<String, Player> players = new HashMap<String, Player>();
+            final Scanner pokerGame = new Scanner(file);
+            double smallBlind = 0.0;
+            double bigBlind = 0.0;
+            while (pokerGame.hasNextLine()) {
+                String line = pokerGame.nextLine();
+                line = line.replaceAll("\\$", "");
+                final String[] parameters = line.split(" ");
+                final String currentPlayer = parameters[0];
+                try {
+                    if (parameters[0].equals("Seat")) {
+                        if (!players.containsKey(parameters[2])) {
+                            players.put(parameters[2], new Player(parameters[2]));
+                        }
+                        if (parameters[5].equals("sitting")) {
+                            players.get(parameters[2]).toggle(false);
+                        }
+                        else {
+                            players.get(parameters[2]).toggle(true);
+                        }
+                    }
+                }
+                catch (Exception ex) {}
+                try {
+                    if (parameters[3].equals("small")) {
+                        smallBlind = Double.parseDouble(parameters[5]);
+                    }
+                    if (parameters[3].equals("big")) {
+                        bigBlind = Double.parseDouble(parameters[5]);
+                    }
+                }
+                catch (Exception ex2) {}
+                try {
+                    if (players.containsKey(currentPlayer)) {
+                        if (parameters[1].equals("raises")) {
+                            if (Double.parseDouble(parameters[4]) >= bigBlind * 3.0) {
+                                players.get(currentPlayer).preFlopThree();
+                            }
+                            else {
+                                players.get(currentPlayer).preFlopBet();
+                            }
+                        }
+                        else if (parameters[1].equals("folds")) {
+                            players.get(currentPlayer).fold();
+                        }
+                        else if (parameters[1].equals("calls")) {
+                            players.get(currentPlayer).preFlopBet();
+                        }
+                    }
+                }
+                catch (Exception ex3) {}
+                try {
+                    if (parameters[1].equals("FLOP")) {
+                        while (!pokerGame.nextLine().contains("SUMMARY")) {
+                            pokerGame.nextLine();
+                        }
+                    }
+                }
+                catch (Exception ex4) {}
+                try {
+                    for (int i = 0; i < parameters.length; ++i) {
+                        if (parameters[i].equals("lost")) {
+                            players.get(currentPlayer).toggle(false);
+                        }
+                    }
+                }
+                catch (Exception ex5) {}
+            }
+            System.out.println(invokedynamic(makeConcatWithConstants:(DD)Ljava/lang/String;, smallBlind, bigBlind));
+            for (final Player p : players.values()) {
+                if (p.onTable()) {
+                    System.out.println(invokedynamic(makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;, p.getName()));
+                    System.out.println(invokedynamic(makeConcatWithConstants:(I)Ljava/lang/String;, (int)(p.getVPIP() * 100.0)));
+                    System.out.println(invokedynamic(makeConcatWithConstants:(I)Ljava/lang/String;, p.getPreFlopRaises()));
+                    System.out.println(invokedynamic(makeConcatWithConstants:(I)Ljava/lang/String;, p.folds()));
+                    System.out.println(invokedynamic(makeConcatWithConstants:(I)Ljava/lang/String;, (int)(p.getPreFlopThree() / (double)p.getPreFlopRaises() * 100.0)));
+                }
+            }
+            TimeUnit.SECONDS.sleep(1L);
+            clrscr();
+        }
+    }
+    
+    public static void clrscr() {
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder(new String[] { "cmd", "/c", "cls" }).inheritIO().start().waitFor();
+            }
+            else {
+                Runtime.getRuntime().exec("clear");
+            }
+        }
+        catch (IOException ex) {}
+        catch (InterruptedException ex2) {}
+    }
+}
