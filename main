@@ -6,10 +6,6 @@ import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.util.Scanner;
 
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 public class Main
 {
     public static void main(final String[] args) throws FileNotFoundException, InterruptedException {
