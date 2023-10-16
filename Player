@@ -1,0 +1,58 @@
+public class Player
+{
+    private int folds;
+    private int preFlopRaises;
+    private int preFlopThree;
+    private boolean display;
+    private String name;
+    
+    public Player(final String name) {
+        this.name = name;
+        this.display = true;
+    }
+    
+    public void preFlopBet() {
+        ++this.preFlopRaises;
+    }
+    
+    public void preFlopThree() {
+        ++this.preFlopThree;
+        this.preFlopBet();
+    }
+    
+    public void fold() {
+        ++this.folds;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public int folds() {
+        return this.folds;
+    }
+    
+    public int getPreFlopRaises() {
+        return this.preFlopRaises;
+    }
+    
+    public int getPreFlopThree() {
+        return this.preFlopThree;
+    }
+    
+    public double getVPIP() {
+        return this.getPreFlopRaises() / (double)(this.folds() + this.getPreFlopRaises());
+    }
+    
+    public void toggle() {
+        this.display = !this.display;
+    }
+    
+    public void toggle(final boolean value) {
+        this.display = value;
+    }
+    
+    public boolean onTable() {
+        return this.display;
+    }
+}
